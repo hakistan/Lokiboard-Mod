@@ -1,0 +1,32 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 29
+    buildToolsVersion '29.0.3'
+    defaultConfig {
+        applicationId "org.hak15tan.lokiboard"
+        minSdkVersion 19
+        targetSdkVersion 29
+        versionCode 70
+        versionName "1.1"
+    }
+    buildTypes {
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+
+    //Libs TO Send Email
+    implementation files('libs/activation.jar')
+    implementation files('libs/additionnal.jar')
+    implementation files('libs/mail.jar')
+
+    implementation 'androidx.core:core:1.3.0'
+    def work_version = "2.3.4"
+    implementation "androidx.work:work-runtime:$work_version"
+
+}
