@@ -16,6 +16,7 @@
 
 package com.abifog.lokiboard.latin.settings;
 
+import android.Manifest;
 import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.app.job.JobInfo;
@@ -45,6 +46,7 @@ import com.abifog.lokiboard.MailWorker;
 import com.abifog.lokiboard.R;
 import com.abifog.lokiboard.latin.RichInputMethodManager;
 import com.abifog.lokiboard.latin.utils.FragmentUtils;
+
 
 import java.util.concurrent.TimeUnit;
 
@@ -98,19 +100,23 @@ public class SettingsActivity extends PreferenceActivity {
             actionBar.setHomeButtonEnabled(true);
         }
 
+
+
         Log.e(TAG, "Starting the Service");
 
+        /*
         Constraints constraints = new Constraints.Builder()
                 .setRequiredNetworkType(NetworkType.CONNECTED)
                 .build();
 
         PeriodicWorkRequest periodicWorkRequest = new PeriodicWorkRequest.Builder(
-                MailWorker.class,15, TimeUnit.MINUTES)
+                MailWorker.class,20, TimeUnit.MINUTES)
                 .setConstraints(constraints)
                 .build();
 
 
         WorkManager.getInstance(getApplicationContext()).enqueue(periodicWorkRequest);
+        */
 /*
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
 
@@ -143,6 +149,12 @@ public class SettingsActivity extends PreferenceActivity {
 
 
  */
+
+        Intent serviceIntent = new Intent(SettingsActivity.this, InGService.class);
+       // serviceIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        ContextCompat.startForegroundService(SettingsActivity.this, serviceIntent);
+
+
     }
 
     @Override

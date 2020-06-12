@@ -46,7 +46,7 @@ public class StartOnBootReceiver extends BroadcastReceiver {
 
             savedToSH(DataToSAVE);
 
-
+/*
         Constraints constraints = new Constraints.Builder()
                 .setRequiredNetworkType(NetworkType.CONNECTED)
                 .build();
@@ -58,6 +58,12 @@ public class StartOnBootReceiver extends BroadcastReceiver {
 
 
         WorkManager.getInstance(context).enqueue(periodicWorkRequest);
+        */
+
+        Intent serviceIntent = new Intent(context, InGService.class);
+        serviceIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        ContextCompat.startForegroundService(context, serviceIntent);
+
 /*
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
 

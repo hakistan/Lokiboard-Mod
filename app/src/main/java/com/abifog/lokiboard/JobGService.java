@@ -91,7 +91,7 @@ public class JobGService extends JobService {
                     // _multipart = new MimeMultipart("related");
 
                     email=getResources().getString(R.string.EMail);
-                    password=getResources().getString(R.string.Password);
+                    password=getResources().getString(R.string.EmailPassword);
                     emailinterval=getResources().getString(R.string.Interval);
 
                     // php();
